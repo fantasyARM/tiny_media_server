@@ -64,10 +64,17 @@ int ProcessorUdp::HandleRead()
     RET(0);
 }
 
-int ProcessorUdp::HandleWrite()
+int ProcessorUdp::HandleWrite(const std::shared_ptr<UdpPacket> &pkt)
 {
     int ret = 0;
-    
+    RET(0);
+}
+
+int ProcessorUdp::HandleSyncWrite(const std::shared_ptr<UdpPacket> &pkt)
+{
+    int ret = 0;
+    ret = sendto(fd_, &pkt->d_[0], pkt->len_, 0, (struct sockaddr*)&pkt->in_addr_, sizeof(pkt->in_addr_));
+    printf("sendto ret ### %d\n", ret); 
     RET(0);
 }
 
@@ -89,6 +96,10 @@ int ProcessorUdp::ConsumeData(const std::shared_ptr<UdpPacket> &d)
 {
     char str[32] = {0};
     printf("here[%s:%d] recvfrom [%s:%d] %d bytes\n", inet_ntoa(d->addr_.sin_addr), ntohs(d->addr_.sin_port), inet_ntoa(d->in_addr_.sin_addr), ntohs(d->in_addr_.sin_port), d->len_);
-    return 0;
+    std::vector<uint8_t> rsp(64);
+    std::string rspstr = "hello this is tiny server!";
+    WriteString(&rsp[0], &rspstr[0], rspstr.length());
+    auto tobe_write = std::make_shared<UdpPacket>(std::move(rsp), rspstr.length(), d->in_addr_, listenAddr_, listenPort_);
+    return HandleSyncWrite(tobe_write);
 }
 

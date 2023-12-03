@@ -2,7 +2,6 @@
 #include <memory>
 #include <mutex>
 #include "event.h"
-#include "processor.h"
 #include "noncopyable.hpp"
 #include "thread_pool.hpp"
 namespace tiny
@@ -51,8 +50,8 @@ public:
 
 private:
     int InitEngine(const int pools = 0);
-    Event::NotifyCall engine_notify_;
-    Event::NotifyCall engine_add_;
+    Processor::NotifyCall engine_notify_;
+    Processor::NotifyCall engine_add_;
     std::atomic<bool> running_{true};
     std::unique_ptr<ThreadPools> pools_;
     std::recursive_mutex lk_;

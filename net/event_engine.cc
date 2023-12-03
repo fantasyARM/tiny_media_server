@@ -132,7 +132,7 @@ int EventEngine::HandleEvent(const std::shared_ptr<Event>& e)
 	}
 
 	if (e->GetType() & EPOLLOUT) {
-	    if ((ret = e->Handle()->HandleWrite()) != 0) {
+	    if ((ret = e->Handle()->HandleWrite(e->GetPkt())) != 0) {
 	        DelEvent(e);
                 RET(-2);
 	    } else {
@@ -172,8 +172,8 @@ int EventEngine::WaitEpoll()
         }
         // route event to thread pool
     	std::shared_ptr<Event> e = std::make_shared<Event>(event_type, (Processor *)events[i].data.ptr);
-        e->SetNotify(std::forward<Event::NotifyCall>(engine_notify_));
-        e->SetInsert(std::forward<Event::NotifyCall>(engine_add_));
+        e->Handle()->SetNotify(std::forward<Processor::NotifyCall>(engine_notify_));
+        e->Handle()->SetInsert(std::forward<Processor::NotifyCall>(engine_add_));
 	HandleEvent(e);
     }
     RET(0);

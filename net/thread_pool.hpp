@@ -17,9 +17,7 @@ public:
     }
 
     int HandleEvent(const std::shared_ptr<Event> &e) {
-        int rid = Route(e->GetFd());
-        printf("rid ## %d pools_count_ ### %d\n", rid, pools_count_);
-	return thread_list_[rid]->HandleEvent(e);
+	return thread_list_[Route(e->GetFd())]->HandleEvent(e);
     }
 
     int Route(const int fd) {

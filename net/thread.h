@@ -5,7 +5,7 @@
 namespace tiny {
 #define NOTIFY(ret, e) \
 { \
-    e->notify_(ret, e); \
+    e->Handle()->notify_(ret, e); \
 } void(0)
 class Thread
 {
@@ -38,7 +38,7 @@ public:
         }
 
         if (e->GetType() & EPOLLOUT) {//write data ok
-            if ((ret = e->Handle()->HandleWrite()) == 0) {
+            if ((ret = e->Handle()->HandleWrite(e->GetPkt())) == 0) {
 	        NOTIFY(1, e);
 	    } else {
 	        NOTIFY(-1, e);
